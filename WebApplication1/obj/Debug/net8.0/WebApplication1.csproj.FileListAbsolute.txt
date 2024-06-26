@@ -102,3 +102,4 @@ D:\dotnet\APICatalogo\WebApplication1\WebApplication1\obj\Debug\net8.0\refint\We
 D:\dotnet\APICatalogo\WebApplication1\WebApplication1\obj\Debug\net8.0\WebApplication1.pdb
 D:\dotnet\APICatalogo\WebApplication1\WebApplication1\obj\Debug\net8.0\WebApplication1.genruntimeconfig.cache
 D:\dotnet\APICatalogo\WebApplication1\WebApplication1\obj\Debug\net8.0\ref\WebApplication1.dll
+D:\dotnet\APICatalogo\WebApplication1\WebApplication1\obj\Debug\net8.0\WebApplication1.sourcelink.json

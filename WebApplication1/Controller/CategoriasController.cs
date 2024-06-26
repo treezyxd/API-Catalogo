@@ -17,34 +17,21 @@ namespace WebApplication1.Controller
     [Route("api/[controller]")]
     public class CategoriasController : ControllerBase
     {
-        private readonly ICategoriaRepository _repository;
+        private readonly IRepository<Categoria> _repository;
         private readonly ILogger<CategoriasController> _logger;
 
-        public CategoriasController(ICategoriaRepository repository,
+        public CategoriasController(IRepository<Categoria> repository,
                                     ILogger<CategoriasController> logger)
         {
             _repository       = repository;
             _logger        = logger;
         }
 
-        [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
-        {
-            var produtos = _repository.GetCategoriaProdutos();
-
-            if (produtos is null)
-            {
-                return NotFound("Produtos nao encontrados");
-            }
-
-            return Ok();
-        }
-
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))] // Filtro que executa antes da Action e depois da Action
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categorias = _repository.GetCategorias();
+            var categorias = _repository.GetAll();
 
             if (categorias is null)
             {
@@ -59,7 +46,7 @@ namespace WebApplication1.Controller
         public ActionResult<IEnumerable<Categoria>> Get(int id)
         {
             // throw new Exception("Excecao ao retornar a categoria pelo id");
-            var categoria = _repository.GetCategoria(id);
+            var categoria = _repository.Get(c => c.CategoriaId == id);
 
             if (categoria is null)
             {
@@ -96,14 +83,14 @@ namespace WebApplication1.Controller
         [HttpDelete("{id:int}")]
         public ActionResult<Categoria> Delete(int id)
         {
-            var categoria = _repository.GetCategoria(id);
+            var categoria = _repository.Get(c => c.CategoriaId == id);
 
             if (categoria is null)
             {
                 return NotFound($"Categoria com id = {id} nao foi encontrada");
             }
 
-            var categoriaExcluida = _repository.Delete(id);
+            var categoriaExcluida = _repository.Delete(categoria);
             return Ok(categoriaExcluida);
         }
     }
