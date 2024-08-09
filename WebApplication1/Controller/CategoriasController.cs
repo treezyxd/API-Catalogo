@@ -39,7 +39,19 @@ namespace WebApplication1.Controller
                 return NotFound("Categorias nao encontradas");
             }
 
-            return Ok(categorias);
+            var categoriasDTO = new List<CategoriaDTO>();
+            foreach (var categoria in categorias)
+            {
+                var categoriaDTO = new CategoriaDTO()
+                {
+                    CategoriaId = categoria.CategoriaId,
+                    Nome = categoria.Nome,
+                    ImagemUrl = categoria.ImagemUrl
+                };
+                categoriasDTO.Add(categoriaDTO);
+            }
+
+            return Ok(categoriasDTO);
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
@@ -51,36 +63,74 @@ namespace WebApplication1.Controller
 
             if (categoria is null)
             {
+                _logger.LogWarning($"Categoria com id = {id} nao encontrada");
                 return NotFound($"Categoria com id = {id} nao encontrada");
             }
 
-            return Ok(categoria);
+            var categoriaDTO = new CategoriaDTO()
+            {
+                CategoriaId = categoria.CategoriaId,
+                Nome = categoria.Nome,
+                ImagemUrl = categoria.ImagemUrl
+            };
+
+            return Ok(categoriaDTO);
         }
 
         [HttpPost]
-        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoria)
+        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDTO)
         {
-            if (categoria is null)
+            if (categoriaDTO is null)
             {
                 return BadRequest("Dados Invalidos");
             }
+
+            var categoria = new Categoria()
+            {
+                CategoriaId = categoriaDTO.CategoriaId,
+                Nome = categoriaDTO.Nome,
+                ImagemUrl = categoriaDTO.ImagemUrl
+            };
 
             var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
             _uof.Commit();
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaId }, categoriaCriada);
+
+            var novaCategoriaDTO = new CategoriaDTO()
+            {
+                CategoriaId = categoriaCriada.CategoriaId,
+                Nome = categoriaCriada.Nome,
+                ImagemUrl = categoriaCriada.ImagemUrl
+            };
+
+            return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaId }, novaCategoriaDTO);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoria)
+        public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDTO)
         {
-            if (categoria is null)
+            if (id != categoriaDTO.CategoriaId)
             {
                 return BadRequest("Dados Invalidos");
             }
 
-            _uof.CategoriaRepository.Update(categoria);
+            var categoria = new Categoria()
+            {
+                CategoriaId = categoriaDTO.CategoriaId,
+                Nome = categoriaDTO.Nome,
+                ImagemUrl = categoriaDTO.ImagemUrl
+            };
+
+            var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
             _uof.Commit();
-            return Ok(categoria);
+
+            var categoriaAtualizadaDTO = new CategoriaDTO()
+            {
+                CategoriaId = categoriaAtualizada.CategoriaId,
+                Nome = categoriaAtualizada.Nome,
+                ImagemUrl = categoriaAtualizada.ImagemUrl
+            };
+
+            return Ok(categoriaAtualizadaDTO);
         }
 
         [HttpDelete("{id:int}")]
@@ -95,7 +145,15 @@ namespace WebApplication1.Controller
 
             var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
             _uof.Commit();
-            return Ok(categoriaExcluida);
+
+            var categoriaExcluidaDTO = new CategoriaDTO()
+            {
+                CategoriaId = categoriaExcluida.CategoriaId,
+                Nome = categoriaExcluida.Nome,
+                ImagemUrl = categoriaExcluida.ImagemUrl
+            };
+
+            return Ok(categoriaExcluidaDTO);
         }
     }
 }
